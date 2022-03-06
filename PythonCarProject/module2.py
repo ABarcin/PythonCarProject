@@ -13,14 +13,15 @@ app = Flask(__name__)
 url = "https://www.cars.com/for-sale/searchresults.action"
 browser=webdriver.Firefox()
 
+#Tek methodda ister parametre göndersin ister göndermesin multi yada filtresiz olarak tüm araçlar listelenebiliyor.
 @app.route('/cars/list', methods=['GET'])
 def getFiftyCars():
     with requests.get(url) as res:
         if res.status_code == 200:
-            info = dict()
+            info = dict()  #dictionary ile yaptım json formatı şeklinde çıktı alındığı için json dönüştürme kullanmadım.
             info["cars"] = []
             browser.get(url)
-            trans=request.args.get('trans')
+            trans=request.args.get('trans') # requestte karşılık gelen parametre var ise alıyor
             brand=request.args.get('brand')
             extcolor=request.args.get('extcolor')
             year=request.args.get('year')
@@ -35,7 +36,7 @@ def getFiftyCars():
                 for x in range(len(chcTran)):
                     value=chcTran[x].find_element(by=By.CLASS_NAME,value="sds-input")
                     value=value.get_attribute('value')
-                    if value==trans:
+                    if value==trans.lower():
                         label=chcTran[x].find_element(by=By.CLASS_NAME,value="sds-label")
                         time.sleep(2)
                         label.click()
@@ -44,7 +45,7 @@ def getFiftyCars():
             if brand!=None:
                 drp=browser.find_element(by=By.ID,value="make_select")
                 drp=Select(drp)
-                drp.select_by_value(brand)
+                drp.select_by_value(brand.lower())
 
             if extcolor!=None:
                 buttonColors = browser.find_element(By.ID, "trigger_exterior_colors")
@@ -55,7 +56,7 @@ def getFiftyCars():
                 for x in range(len(chcColor)):
                     value=chcColor[x].find_element(by=By.CLASS_NAME,value="sds-input")
                     value=value.get_attribute('value')
-                    if value==extcolor:
+                    if value==extcolor.lower():
                         label=chcColor[x].find_element(by=By.CLASS_NAME,value="sds-label")
                         time.sleep(2)
                         label.click()
@@ -63,12 +64,12 @@ def getFiftyCars():
 
             if year!=None:
                 yearSelect=Select(browser.find_element(by=By.ID,value="year_year_min_select"))
-                time.sleep(1)
-                yearSelect.select_by_value(year)
-                time.sleep(2)
+                time.sleep(1) 
+                yearSelect.select_by_value(year.lower())
+                time.sleep(2) #time.sleep leri kaldırınca patlıyor kritik bölgeye al yada farklı bir yol bul
             if brand==None and trans==None and extcolor==None and year==None:
                 drp=Select(browser.find_element(by=By.ID,value="pagination-dropdown"))
-                drp.select_by_value("50")
+                drp.select_by_value("50")  #100 araçseçilince next butonu gelmiyor farklı bir yoldan çöz
                 time.sleep(3)
                 carCount=50
             else:
@@ -81,9 +82,9 @@ def getFiftyCars():
                 else:
                     carCount=carCount[0]
             if int(carCount)>49:
-                carCount="45"
+                carCount="45"  #50 araç seçmemize rağmen 47 araç geliyor 100 araçta seçince next butonu görünmüyor !! 45 araçta çalışıyor 50 araç için kontrol Et
 
-        for x in range(int(carCount)):
+        for x in range(int(carCount)-2):
             car = dict()
             if x==0:
                 browser.find_element(by=By.CLASS_NAME,value="vehicle-card-link").click()
@@ -98,7 +99,7 @@ def getFiftyCars():
 
                 car["modelYear"]=titles[0]
                 try:
-                    imgDiv=browser.find_element(by=By.ID,value="swipe-index-0")
+                    imgDiv=browser.find_element(by=By.ID,value="swipe-index-0")   #çoğu araçta olmasına rağmen 360 derece foto eklenen araçlarda yok bu yüzden try kullanıldı
                     car["img"]=imgDiv.get_attribute('src')
                 except :
                     imgDiv=browser.find_element(by=By.CLASS_NAME,value="row-pic")
@@ -109,7 +110,11 @@ def getFiftyCars():
                 car["transmission"]=carTrans
                 info["cars"].append(car)
             else:
-                browser.find_element(by=By.CLASS_NAME,value="srp-carousel-next-link").click()
+                nextCLick=browser.find_element(by=By.CLASS_NAME,value="srp-carousel-next-link")
+                try:
+                    nextCLick.click()
+                except :
+                    return info
                 title=browser.find_element(by=By.XPATH,value="/html/body/section/div[5]/section/header/div[1]/h1").text
                 car["title"] = title
 
