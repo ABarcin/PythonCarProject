@@ -11,14 +11,26 @@
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
     <LaunchProvider>Web launcher</LaunchProvider>
-    <WebBrowserUrl>http://localhost</WebBrowserUrl>
+    <WebBrowserUrl>
+    </WebBrowserUrl>
     <OutputPath>.</OutputPath>
     <SuppressCollectPythonCloudServiceFiles>true</SuppressCollectPythonCloudServiceFiles>
     <Name>PythonCarProject</Name>
     <RootNamespace>PythonCarProject</RootNamespace>
     <InterpreterId>MSBuild|env|$(MSBuildProjectFullPath)</InterpreterId>
-    <WebBrowserPort>4449</WebBrowserPort>
-    <PythonRunWebServerCommand>https://localhost:4449</PythonRunWebServerCommand>
+    <WebBrowserPort>
+    </WebBrowserPort>
+    <PythonRunWebServerCommand>
+    </PythonRunWebServerCommand>
+    <EnableNativeCodeDebugging>False</EnableNativeCodeDebugging>
+    <PythonDebugWebServerCommand>
+    </PythonDebugWebServerCommand>
+    <PythonDebugWebServerCommandType>
+    </PythonDebugWebServerCommandType>
+    <Environment>
+    </Environment>
+    <PythonRunWebServerCommandArguments>
+    </PythonRunWebServerCommandArguments>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>

@@ -2,48 +2,89 @@ import requests
 from selenium import webdriver
 from selenium.webdriver.support.ui import Select
 import time
-import pprint
 from selenium.webdriver.common.by import By
+from flask import Flask,request
+from flask import make_response
+
+app = Flask(__name__)
+
 url = "https://www.cars.com/for-sale/searchresults.action"
 browser=webdriver.Firefox()
 
-#first 50 cars
-def firstFiveCars(url):
+@app.route('/cars/list', methods=['GET'])
+def getFiftyCars():
     with requests.get(url) as res:
         if res.status_code == 200:
             info = dict()
             info["cars"] = []
             browser.get(url)
-            drp=Select(browser.find_element(by=By.ID,value="pagination-dropdown"))
-            drp.select_by_index(4)
-            time.sleep(2)
             lists=browser.find_elements(by=By.CSS_SELECTOR,value=".vehicle-card")
-            carCount=50
-    return getCars(info,carCount)
-#cars = firstFiveCars(url)
+            carCount=51
+            trans=request.args.get('trans')
+            brand=request.args.get('brand')
+            extcolor=request.args.get('extcolor')
+            year=request.args.get('year')
+            if brand==null&extcolor==null&trans==null&year==null:
+                getCars(info,carCount)
+                time.sleep(2)
+                return info
+            else:
+                if trans!=None:
+                    buttonTrans = browser.find_element(By.ID, "trigger_transmissions")
+                    time.sleep(2)
+                    buttonTrans.click()
+                    time.sleep(3)
+                    chcTran=browser.find_element(by=By.ID,value="panel_transmissions")
+                    chcTran=chcTran.find_elements(by=By.CLASS_NAME,value="sds-checkbox")
+                
+                    for x in range(len(chcTran)):
+                        value=chcTran[x].find_element(by=By.CLASS_NAME,value="sds-input")
+                        value=value.get_attribute('value')
+                        if value==trans:
+                            label=chcTran[x].find_element(by=By.CLASS_NAME,value="sds-label")
+                            time.sleep(2)
+                            label.click()
+                            time.sleep(2)
 
-def getCarsByBrand(brand=None,extcolor=None,tans=None,year=None):
-    with requests.get(url) as res:
-        if res.status_code == 200:
-            info = dict()
-            info["cars"] = []
-            browser.get(url)
-            if brand!=None:
-                drp=browser.find_element(by=By.ID,value="make_select")
-                drp=Select(drp)
-            drp.select_by_value(brand)
+                if brand!=None:
+                    drp=browser.find_element(by=By.ID,value="make_select")
+                    drp=Select(drp)
+                    drp.select_by_value(brand)
 
-            time.sleep(1)
-            carCounts=browser.find_element(by=By.XPATH,value="/html/body/section/div[2]/div[6]/div/div[4]/div[2]/div/span").text
-            carCount=carCounts.split(' ')[0]
-            carCount=carCount.split(',')
-            if len(carCount)>1:
-                carCount=carCount[0]+carCount[1]
-    return getCars(info,carCount)
+                if extcolor!=None:
+                    buttonColors = browser.find_element(By.ID, "trigger_exterior_colors")
+                    time.sleep(2)
+                    buttonColors.click()
+                    chcColor=browser.find_element(by=By.XPATH,value="//*[@id=\"panel_exterior_colors\"]")
+                    chcColor=chcColor.find_elements(by=By.CLASS_NAME,value="sds-checkbox")
+                    for x in range(len(chcColor)):
+                        value=chcColor[x].find_element(by=By.CLASS_NAME,value="sds-input")
+                        value=value.get_attribute('value')
+                        if value==extcolor:
+                            label=chcColor[x].find_element(by=By.CLASS_NAME,value="sds-label")
+                            time.sleep(2)
+                            label.click()
+
+                if year!=None:
+                    yearSelect=Select(browser.find_element(by=By.ID,value="year_year_min_select"))
+                    time.sleep(1)
+                    yearSelect.select_by_value(year)
+                    time.sleep(2)
+
+                time.sleep(1)
+                carCounts=browser.find_element(by=By.XPATH,value="/html/body/section/div[2]/div[6]/div/div[4]/div[2]/div/span").text
+                carCount=carCounts.split(' ')[0]
+                carCount=carCount.split(',')
+                if len(carCount)>1:
+                    carCount=carCount[0]+carCount[1]
+                else:
+                    carCount=carCount[0]
+            getCars(info,carCount)
+    return info
 
 def getCars(info,carCount):
-    if int(carCount)>10:
-        for x in range(2):
+    if int(carCount)>50:
+        for x in range(4):
             car = dict()
             if x==0:
                 browser.find_element(by=By.CLASS_NAME,value="vehicle-card-link").click()
@@ -88,5 +129,5 @@ def getCars(info,carCount):
                 car["transmission"]=carAttributes[11]
                 info["cars"].append(car)
         return info
-cars=getCarsByBrand(brand="bmw")
-pprint.pprint(cars)
+if __name__ == '__main__':
+    app.run(debug=True)
