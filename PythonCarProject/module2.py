@@ -84,7 +84,7 @@ def getFiftyCars():
             if int(carCount)>49:
                 carCount="45"  #50 araç seçmemize rağmen 47 araç geliyor 100 araçta seçince next butonu görünmüyor !! 45 araçta çalışıyor 50 araç için kontrol Et
 
-        for x in range(int(carCount)-2):
+        for x in range(int(carCount)):
             car = dict()
             if x==0:
                 browser.find_element(by=By.CLASS_NAME,value="vehicle-card-link").click()
