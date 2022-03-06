@@ -24,7 +24,7 @@ def getFiftyCars():
             brand=request.args.get('brand')
             extcolor=request.args.get('extcolor')
             year=request.args.get('year')
-            if brand==null&extcolor==null&trans==null&year==null:
+            if brand==None and extcolor==None and trans==None and year==None:
                 getCars(info,carCount)
                 time.sleep(2)
                 return info
@@ -84,7 +84,7 @@ def getFiftyCars():
 
 def getCars(info,carCount):
     if int(carCount)>50:
-        for x in range(4):
+        for x in range(15):
             car = dict()
             if x==0:
                 browser.find_element(by=By.CLASS_NAME,value="vehicle-card-link").click()
