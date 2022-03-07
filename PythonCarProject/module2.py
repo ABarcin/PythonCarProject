@@ -2,6 +2,7 @@ import requests
 from selenium import webdriver
 from selenium.webdriver.support.ui import Select
 import time
+import json
 from selenium.webdriver.common.by import By
 from flask import Flask,request
 from flask import make_response
@@ -9,17 +10,25 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 app = Flask(__name__)
-
 url = "https://www.cars.com/for-sale/searchresults.action"
-browser=webdriver.Firefox()
 
+class Car:
+  def __init__(self, title, price,brand,color,trans,year,img):
+    self.title=title
+    self.price=price
+    self.brand=brand
+    self.color=color
+    self.trans=trans
+    self.year=year
+    self.img=img
 #Tek methodda ister parametre göndersin ister göndermesin multi yada filtresiz olarak tüm araçlar listelenebiliyor.
-@app.route('/cars/list', methods=['GET'])
+@app.route('/cars/list', methods=['get'])
 def getFiftyCars():
     with requests.get(url) as res:
         if res.status_code == 200:
-            info = dict()  #dictionary ile yaptım json formatı şeklinde çıktı alındığı için json dönüştürme kullanmadım.
-            info["cars"] = []
+            Cars= []
+            global title,brand,color,trans,img,year,price
+            browser=webdriver.Firefox()
             browser.get(url)
             trans=request.args.get('trans') # requestte karşılık gelen parametre var ise alıyor
             brand=request.args.get('brand')
@@ -82,61 +91,65 @@ def getFiftyCars():
                 else:
                     carCount=carCount[0]
             if int(carCount)>49:
-                carCount="45"  #50 araç seçmemize rağmen 47 araç geliyor 100 araçta seçince next butonu görünmüyor !! 45 araçta çalışıyor 50 araç için kontrol Et
+                carCount="2"  #50 araç seçmemize rağmen 47 araç geliyor 100 araçta seçince next butonu görünmüyor !! 45 araçta çalışıyor 50 araç için kontrol Et
 
         for x in range(int(carCount)):
             car = dict()
             if x==0:
+                
                 browser.find_element(by=By.CLASS_NAME,value="vehicle-card-link").click()
-                title=browser.find_element(by=By.XPATH,value="/html/body/section/div[5]/section/header/div[1]/h1").text
-                car["title"] = title
+                tempTitle=browser.find_element(by=By.XPATH,value="/html/body/section/div[5]/section/header/div[1]/h1").text
+                title = tempTitle
 
-                price=browser.find_element(by=By.XPATH,value="/html/body/section/div[5]/section/header/div[2]/span").text
-                car["price"] = price
+                tempPrice=browser.find_element(by=By.XPATH,value="/html/body/section/div[5]/section/header/div[2]/span").text
+                price = tempPrice
 
-                titles=title.split(' ')
-                car["brand"] = titles[1]
+                titles=tempTitle.split(' ')
+                brand = titles[1]
 
-                car["modelYear"]=titles[0]
+                year=titles[0]
                 try:
                     imgDiv=browser.find_element(by=By.ID,value="swipe-index-0")   #çoğu araçta olmasına rağmen 360 derece foto eklenen araçlarda yok bu yüzden try kullanıldı
-                    car["img"]=imgDiv.get_attribute('src')
+                    img=imgDiv.get_attribute('src')
                 except :
                     imgDiv=browser.find_element(by=By.CLASS_NAME,value="row-pic")
-                    car["img"]=imgDiv.get_attribute('src')
+                    img=imgDiv.get_attribute('src')
                 carColor=browser.find_element(by=By.XPATH,value="/html/body/section/div[5]/div[2]/section[1]/dl/dd[1]").text
-                car["color"]=carColor
+                color=carColor
                 carTrans=browser.find_element(by=By.XPATH,value="/html/body/section/div[5]/div[2]/section[1]/dl/dd[6]").text
-                car["transmission"]=carTrans
-                info["cars"].append(car)
+                trans=carTrans
+                #car=Car(title, price,brand,color,trans,year,img)
+                Cars.append([title, price,brand,color,trans,year,img])
             else:
                 nextCLick=browser.find_element(by=By.CLASS_NAME,value="srp-carousel-next-link")
                 try:
                     nextCLick.click()
                 except :
                     return info
-                title=browser.find_element(by=By.XPATH,value="/html/body/section/div[5]/section/header/div[1]/h1").text
-                car["title"] = title
+                tempTitle=browser.find_element(by=By.XPATH,value="/html/body/section/div[5]/section/header/div[1]/h1").text
+                title = tempTitle
 
-                price=browser.find_element(by=By.XPATH,value="/html/body/section/div[5]/section/header/div[2]/span").text
-                car["price"] = price
+                tempPrice=browser.find_element(by=By.XPATH,value="/html/body/section/div[5]/section/header/div[2]/span").text
+                price = tempPrice
 
-                titles=title.split(' ')
-                car["brand"] = titles[1]
+                titles=tempTitle.split(' ')
+                brand = titles[1]
 
-                car["modelYear"]=titles[0]
+                year=titles[0]
                 try:
                     imgDiv=browser.find_element(by=By.ID,value="swipe-index-0")
-                    car["img"]=imgDiv.get_attribute('src')
+                    img=imgDiv.get_attribute('src')
                 except :
                     imgDiv=browser.find_element(by=By.CLASS_NAME,value="row-pic")
-                    car["img"]=imgDiv.get_attribute('src')
+                    img=imgDiv.get_attribute('src')
 
                 basics=browser.find_element(by=By.CLASS_NAME,value="fancy-description-list")
                 carAttributes=basics.text.split('\n')
-                car["color"]=carAttributes[1]
-                car["transmission"]=carAttributes[11]
-                info["cars"].append(car)
-    return info
+                color=carAttributes[1]
+                trans=carAttributes[11]
+                #car=Car(title, price,brand,color,trans,year,img)
+                Cars.append([title, price,brand,color,trans,year,img])
+
+    return json.dumps(Cars)
 if __name__ == '__main__':
     app.run(debug=True)

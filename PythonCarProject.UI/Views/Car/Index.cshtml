@@ -1,0 +1,17 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+
+}
+@model PythonCarProject.UI.Models.Car
+<p>Filtresiz araç getirmek için lütfen boş bırakınız Şimdilik :)</p>
+<div class="container">
+    <form asp-controller="Car" asp-action="GetCars" method="post">
+        Brand       :  <input asp-for="Brand" id="brand"/> <br />
+        Color       : <input asp-for="Color" id="color"/><br />
+        Year        :  <input asp-for="Year" id="year"/> <br />
+        Transmission: <input asp-for="Transmission" id="trans"/><br />
+        <input  type="submit" value="GetCarsByFilters" id="btnSubmit"/>
+    </form>
+</div>
