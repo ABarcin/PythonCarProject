@@ -20,8 +20,8 @@ namespace PythonCarProject.UI.Controllers
         public async Task<IActionResult> GetCars(Car car)
         {
             HttpResponseMessage response;
-            HttpClient client = new HttpClient();
             string responseBody;
+            client.Timeout = TimeSpan.FromSeconds(600);
             List<Car> Cars = new List<Car>();
             if (car.Brand == null && car.Color == null && car.Year == null && car.Transmission == null)
             {

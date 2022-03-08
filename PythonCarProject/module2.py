@@ -82,21 +82,13 @@ def getFiftyCars():
                 time.sleep(3)
                 carCount=50
             else:
-                element = browser.find_element(By.XPATH, "/html/body/section/div[2]/div[6]/div/div[4]/div[2]/div/span")
-                carCounts=element.text
-                carCount=carCounts.split(' ')[0]
-                tryCarCountSplit=carCount.split(',')
-                if len(tryCarCountSplit)>1:
-                    carCount=tryCarCountSplit[0]+tryCarCountSplit[1]
-                else:
-                    carCount=carCount[0]
+                carCount=50
             if int(carCount)>49:
-                carCount="2"  #50 araç seçmemize rağmen 47 araç geliyor 100 araçta seçince next butonu görünmüyor !! 45 araçta çalışıyor 50 araç için kontrol Et
+                carCount="49"  #50 araç seçmemize rağmen 47 araç geliyor 100 araçta seçince next butonu görünmüyor !! 45 araçta çalışıyor 50 araç için kontrol Et
 
         for x in range(int(carCount)):
             car = dict()
             if x==0:
-                
                 browser.find_element(by=By.CLASS_NAME,value="vehicle-card-link").click()
                 tempTitle=browser.find_element(by=By.XPATH,value="/html/body/section/div[5]/section/header/div[1]/h1").text
                 title = tempTitle
@@ -122,10 +114,11 @@ def getFiftyCars():
                 Cars.append([title, price,brand,color,trans,year,img])
             else:
                 nextCLick=browser.find_element(by=By.CLASS_NAME,value="srp-carousel-next-link")
+                time.sleep(1)
                 try:
                     nextCLick.click()
                 except :
-                    return info
+                    return json.dumps(Cars)
                 tempTitle=browser.find_element(by=By.XPATH,value="/html/body/section/div[5]/section/header/div[1]/h1").text
                 title = tempTitle
 
