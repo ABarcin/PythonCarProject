@@ -8,19 +8,11 @@ from flask import Flask,request
 from flask import make_response
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+import pprint
 
 app = Flask(__name__)
 url = "https://www.cars.com/for-sale/searchresults.action"
 
-class Car:
-  def __init__(self, title, price,brand,color,trans,year,img):
-    self.title=title
-    self.price=price
-    self.brand=brand
-    self.color=color
-    self.trans=trans
-    self.year=year
-    self.img=img
 #Tek methodda ister parametre göndersin ister göndermesin multi yada filtresiz olarak tüm araçlar listelenebiliyor.
 @app.route('/cars/list', methods=['get'])
 def getFiftyCars():
@@ -84,7 +76,7 @@ def getFiftyCars():
             else:
                 carCount=50
             if int(carCount)>49:
-                carCount="49"  #50 araç seçmemize rağmen 47 araç geliyor 100 araçta seçince next butonu görünmüyor !! 45 araçta çalışıyor 50 araç için kontrol Et
+                carCount="49" 
 
         for x in range(int(carCount)):
             car = dict()
@@ -144,5 +136,33 @@ def getFiftyCars():
                 Cars.append([title, price,brand,color,trans,year,img])
 
     return json.dumps(Cars)
+@app.route('/cars/filters', methods=['get'])
+def getCarFilters():
+     with requests.get(url) as res:
+        if res.status_code == 200:
+            Filters= []
+            browser=webdriver.Firefox()
+            browser.get(url)
+            brand=browser.find_element(by=By.ID,value="make_select")
+            options = [x for x in brand.find_elements(by=By.TAG_NAME,value="option")]
+            for element in options:
+                Filters.append(element.get_attribute("value"))
+            Filters.append("nextfilter")
+            color=browser.find_element(by=By.ID,value="panel_exterior_colors")
+            options = [x for x in color.find_elements(by=By.TAG_NAME,value="input")]
+            for element in options:
+                Filters.append(element.get_attribute("value"))
+            Filters.append("nextfilter")
+            trans=browser.find_element(by=By.ID,value="panel_transmissions")
+            options = [x for x in trans.find_elements(by=By.TAG_NAME,value="input")]
+            for element in options:
+                Filters.append(element.get_attribute("value"))
+            Filters.append("nextfilter")
+            year=browser.find_element(by=By.ID,value="year_year_min_select")
+            options = [x for x in year.find_elements(by=By.TAG_NAME,value="option")]
+            for element in options:
+                Filters.append(element.get_attribute("value"))
+        browser.close()
+        return json.dumps(Filters)
 if __name__ == '__main__':
     app.run(debug=True)

@@ -3,60 +3,21 @@
 @{
     ViewData["Title"] = "GetCars";
 }
-
 <h1>GetCars</h1>
+@foreach (var item in Model)
+{
+    <div class="container">
+        <div class="card" style="width: 20rem;height:35rem; float:left; margin-right:2rem; margin-top:2rem;">
+            <img src="@item.ImagePath" class="card-img-top" height="200" alt="...">
+            <div class="card-body">
+                <h5 class="card-title">@Html.DisplayFor(modelItem => item.Title)</h5>
+                <p class="card-text"><b>Brand:</b> @Html.DisplayFor(modelItem => item.Brand) </p>
+                <p class="card-text"><b>Color:</b> @Html.DisplayFor(modelItem => item.Color) </p>
+                <p class="card-text"><b>Color:</b> @Html.DisplayFor(modelItem => item.Transmission) </p>
+                <p class="card-text"><b>Color:</b> @Html.DisplayFor(modelItem => item.Year) </p>
+                <h6 class="card-text"><b>Color:</b> @Html.DisplayFor(modelItem => item.Price) </h6>
+            </div>
+        </div>
+    </div>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Brand)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Color)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Year)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Title)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Transmission)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Price)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ImagePath)
-            </th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Brand)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Color)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Year)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Title)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Transmission)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Price)
-            </td>
-            <td>
-                <img src="@item.ImagePath" height="100px" width="100px"/>
-            </td>
-        </tr>
 }
-    </tbody>
-</table>
