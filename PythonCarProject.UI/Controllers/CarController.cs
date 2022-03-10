@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
+using PythonCarProject.UI.Common;
 using PythonCarProject.UI.Models;
 using System;
 using System.Collections.Generic;
@@ -17,11 +18,14 @@ namespace PythonCarProject.UI.Controllers
         {
             HttpClient client = new HttpClient();
             HttpResponseMessage response;
+            if (Filters.Brands==null)
+            {
+                Filters.Brands = new List<SelectListItem>();
+                Filters.Colors = new List<SelectListItem>();
+                Filters.Trans = new List<SelectListItem>();
+                Filters.Years = new List<SelectListItem>();
+            }
             string responseBody;
-            List<SelectListItem> brands = new List<SelectListItem>();
-            List<SelectListItem> colors = new List<SelectListItem>();
-            List<SelectListItem> years = new List<SelectListItem>();
-            List<SelectListItem> trans = new List<SelectListItem>();
             client.BaseAddress = new Uri("http://127.0.0.1:5000");
             response = await client.GetAsync("cars/filters");
             response.EnsureSuccessStatusCode();
@@ -40,25 +44,25 @@ namespace PythonCarProject.UI.Controllers
                     {
                         if (count == 0)
                         {
-                            brands.Add(new SelectListItem() { Text = item.ToUpper(), Value = item.ToLower() });
+                            Filters.Brands.Add(new SelectListItem() { Text = item.ToUpper(), Value = item.ToLower() });
                         }
                         if (count == 1)
                         {
-                            colors.Add(new SelectListItem() { Text = item.ToUpper(), Value = item.ToLower() });
+                            Filters.Colors.Add(new SelectListItem() { Text = item.ToUpper(), Value = item.ToLower() });
                         }
                         if (count == 2)
                         {
-                            trans.Add(new SelectListItem() { Text = item.ToUpper(), Value = item.ToLower() });
+                            Filters.Trans.Add(new SelectListItem() { Text = item.ToUpper(), Value = item.ToLower() });
                         }
                         if (count == 3)
                         {
-                            years.Add(new SelectListItem() { Text = item.ToUpper(), Value = item.ToLower() });
+                            Filters.Years.Add(new SelectListItem() { Text = item.ToUpper(), Value = item.ToLower() });
                         }
                     }
                     
                 }
             }
-            ViewBag.brand = brands.ToList(); ViewBag.color = colors.ToList(); ViewBag.tran = trans.ToList(); ViewBag.year = years.ToList();
+            ViewBag.brand = Filters.Brands.ToList(); ViewBag.color = Filters.Colors.ToList(); ViewBag.tran = Filters.Colors.ToList(); ViewBag.year = Filters.Years.ToList();
             return View();
         }
 
@@ -70,6 +74,7 @@ namespace PythonCarProject.UI.Controllers
             HttpResponseMessage response;
             client.BaseAddress = new Uri("http://127.0.0.1:5000");
             string responseBody;
+            ViewBag.brand = Filters.Brands.ToList(); ViewBag.color = Filters.Colors.ToList(); ViewBag.tran = Filters.Colors.ToList(); ViewBag.year = Filters.Years.ToList();
             client.Timeout = TimeSpan.FromSeconds(600);
             List<Car> Cars = new List<Car>();
             if (car.Brand == null && car.Color == null && car.Year == null && car.Transmission == null)
@@ -147,7 +152,6 @@ namespace PythonCarProject.UI.Controllers
                     Cars.Add(temp);
                 }
             }
-
             return View(Cars);
         }
     }

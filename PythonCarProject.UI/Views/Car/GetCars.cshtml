@@ -3,6 +3,15 @@
 @{
     ViewData["Title"] = "GetCars";
 }
+@section ustMenu{
+    <form asp-controller="Car" asp-action="GetCars" method="post">
+        <span><b>Brand:</b></span>@Html.DropDownList("brand", ViewBag.brand, "SelectBrand", new { @class = "btn btn-secondary" })
+        <span> <b>Color:</b></span> @Html.DropDownList("color", ViewBag.color, "SelectColor", new { @class = "btn btn-secondary " })
+        <span> <b>Year:</b> </span>@Html.DropDownList("year", ViewBag.year, "SelectYear", new { @class = "btn btn-secondary" })
+        <span><b>Transmission:</b></span>  @Html.DropDownList("tran", ViewBag.tran, "SelectTransMission", new { @class = "btn btn-secondary" })
+        <button type="submit" class="btn btn-info">GetCars</button>
+    </form>
+}
 <h1>GetCars</h1>
 @foreach (var item in Model)
 {
@@ -13,9 +22,9 @@
                 <h5 class="card-title">@Html.DisplayFor(modelItem => item.Title)</h5>
                 <p class="card-text"><b>Brand:</b> @Html.DisplayFor(modelItem => item.Brand) </p>
                 <p class="card-text"><b>Color:</b> @Html.DisplayFor(modelItem => item.Color) </p>
-                <p class="card-text"><b>Color:</b> @Html.DisplayFor(modelItem => item.Transmission) </p>
-                <p class="card-text"><b>Color:</b> @Html.DisplayFor(modelItem => item.Year) </p>
-                <h6 class="card-text"><b>Color:</b> @Html.DisplayFor(modelItem => item.Price) </h6>
+                <p class="card-text"><b>TransMission:</b> @Html.DisplayFor(modelItem => item.Transmission) </p>
+                <p class="card-text"><b>Year:</b> @Html.DisplayFor(modelItem => item.Year) </p>
+                <h6 class="card-text"><b>Price:</b> @Html.DisplayFor(modelItem => item.Price) </h6>
             </div>
         </div>
     </div>

@@ -136,6 +136,7 @@ def getFiftyCars():
                 Cars.append([title, price,brand,color,trans,year,img])
 
     return json.dumps(Cars)
+
 @app.route('/cars/filters', methods=['get'])
 def getCarFilters():
      with requests.get(url) as res:
@@ -164,5 +165,6 @@ def getCarFilters():
                 Filters.append(element.get_attribute("value"))
         browser.close()
         return json.dumps(Filters)
+
 if __name__ == '__main__':
     app.run(debug=True)
